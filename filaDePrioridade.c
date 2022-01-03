@@ -39,16 +39,68 @@ bool exibirLog(PFILA f){
 
 int tamanho(PFILA f){
   int tam = 0;
-  
-  /* COMPLETAR */
-  
+  tam = f->elementosNoHeap;
   return tam;
+}
+
+PONT buscarID(PFILA f, int id){
+	int i = 0;
+  PONT atual;
+  for (i=0;i < f->elementosNoHeap; i++)
+  {
+    atual = f->heap[i];
+		if (atual->id == id) 
+      return atual;
+  }
+	return NULL;
+}
+
+void maxHeapfy(PFILA f, int i)
+{
+  int e = 2*i + 1;
+  int d = 2*i + 2;
+  int maior;
+  if(e < f->elementosNoHeap && f->heap[e]->prioridade > f->heap[i]->prioridade)
+    maior = e;
+  else
+    maior = i;
+  if(d < f->elementosNoHeap && f->heap[d]->prioridade > f->heap[maior]->prioridade)
+    maior = d;
+  if(maior != i) //se o m6aior não é o pai
+  {
+    PONT tmp;
+    tmp = f->heap[i];
+    f->heap[i] = f->heap[maior];
+    f->heap[maior] = tmp;
+    maxHeapfy(f, (i-1)/2);
+  }
 }
 
 bool inserirElemento(PFILA f, int id, float prioridade){
   bool res = false;
+
+  if(id < 0 || id >= MAX || f->referencias[id] != NULL)
+    return res;
   
-  /* COMPLETAR */
+  PONT novo;
+  novo = (PONT) malloc(sizeof(ELEMENTO));
+  
+  novo->id = id;
+  novo->prioridade = prioridade;
+  f->referencias[id] = novo;
+
+  int i = 0;
+  PONT atual;
+  while(i < f->elementosNoHeap)
+    i++;
+  f->heap[i] = novo;
+  novo->posicao = i;
+  res = true;
+
+  f->elementosNoHeap++;
+  
+  if(f->elementosNoHeap > 1)
+    maxHeapfy(f, (i-1)/2);
   
   return res;
 }
@@ -79,8 +131,45 @@ PONT removerElemento(PFILA f){
 
 bool consultarPrioridade(PFILA f, int id, float* resposta){
   bool res = false;
+
+  if(id < 0 || id >= MAX || f->referencias[id] == NULL)
+    return res;
   
-  /* COMPLETAR */
-  
+  *resposta = f->referencias[id]->prioridade;
+
+  res = true;
   return res;
+}
+int main()
+{
+  PFILA f = criarFila();
+  exibirLog(f);
+
+
+
+  if(inserirElemento(f, 1, 1)) printf("ok\n");
+  else printf("nok (1)\n");
+  exibirLog(f);
+
+  if(inserirElemento(f, 2, 2)) printf("ok\n");
+  else printf("nok (1)\n");
+  exibirLog(f);
+  if(inserirElemento(f, 4, 3)) printf("ok\n");
+  else printf("nok (2)\n");
+  exibirLog(f);
+  if(inserirElemento(f, 3, 5)) printf("ok\n");
+  else printf("nok (2)\n");
+  exibirLog(f);
+  if(inserirElemento(f, 0, 1)) printf("ok\n");
+  else printf("nok (2)\n");
+  exibirLog(f);
+
+
+  float prioridade;
+if(consultarPrioridade(f, 2, &prioridade)) printf("ok %f\n", prioridade);
+  else printf("nok (1)\n");
+
+    int tam;
+  tam = tamanho(f);
+  printf("%d\n", tam);
 }
