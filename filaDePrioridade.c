@@ -59,20 +59,49 @@ void maxHeapfy(PFILA f, int i)
 {
   int e = 2*i + 1;
   int d = 2*i + 2;
-  int maior;
+  int maior, posicao;
   if(e < f->elementosNoHeap && f->heap[e]->prioridade > f->heap[i]->prioridade)
     maior = e;
   else
     maior = i;
   if(d < f->elementosNoHeap && f->heap[d]->prioridade > f->heap[maior]->prioridade)
     maior = d;
-  if(maior != i) //se o m6aior não é o pai
+  if(maior != i) //se o maior não é o pai
   {
     PONT tmp;
     tmp = f->heap[i];
     f->heap[i] = f->heap[maior];
     f->heap[maior] = tmp;
+
+    posicao = f->heap[i]->posicao;
+    f->heap[i]->posicao = f->heap[maior]->posicao;
+    f->heap[maior]->posicao = posicao;
     maxHeapfy(f, (i-1)/2);
+
+  }
+}
+void maxHeapfyInverso(PFILA f, int i)
+{
+  int e = 2*i + 1;
+  int d = 2*i + 2;
+  int maior, posicao;
+  if(e < f->elementosNoHeap && f->heap[e]->prioridade > f->heap[i]->prioridade)
+    maior = e;
+  else
+    maior = i;
+  if(d < f->elementosNoHeap && f->heap[d]->prioridade > f->heap[maior]->prioridade)
+    maior = d;
+  if(maior != i) //se o maior não é o pai
+  {
+    PONT tmp;
+    tmp = f->heap[i];
+    f->heap[i] = f->heap[maior];
+    f->heap[maior] = tmp;
+
+    posicao = f->heap[i]->posicao;
+    f->heap[i]->posicao = f->heap[maior]->posicao;
+    f->heap[maior]->posicao = posicao;
+    maxHeapfy(f, posicao);
   }
 }
 
@@ -107,17 +136,35 @@ bool inserirElemento(PFILA f, int id, float prioridade){
 
 bool aumentarPrioridade(PFILA f, int id, float novaPrioridade){
   bool res = false;
+
+  if(id < 0 || id >= MAX || f->referencias[id] == NULL || f->referencias[id]->prioridade >= novaPrioridade)
+    return res;
+
+  f->referencias[id]->prioridade = novaPrioridade;
+
+  int i = f->referencias[id]->posicao;
+
+  if(f->elementosNoHeap > 1)
+    maxHeapfy(f, (i-1)/2);
   
-  /* COMPLETAR */
-  
+  res = true;
   return res;
 }
 
 bool reduzirPrioridade(PFILA f, int id, float novaPrioridade){
   bool res = false;
+
+  if(id < 0 || id >= MAX || f->referencias[id] == NULL || f->referencias[id]->prioridade <= novaPrioridade)
+    return res;
+
+  f->referencias[id]->prioridade = novaPrioridade;
+
+  int i = f->referencias[id]->posicao;
+
+  if(f->elementosNoHeap > 1)
+    maxHeapfyInverso(f, i);
   
-  /* COMPLETAR */
-  
+  res = true;
   return res;
 }
 
@@ -145,8 +192,6 @@ int main()
   PFILA f = criarFila();
   exibirLog(f);
 
-
-
   if(inserirElemento(f, 1, 1)) printf("ok\n");
   else printf("nok (1)\n");
   exibirLog(f);
@@ -163,10 +208,15 @@ int main()
   if(inserirElemento(f, 0, 1)) printf("ok\n");
   else printf("nok (2)\n");
   exibirLog(f);
-
+  if(aumentarPrioridade(f, 0, 15)) printf("ok\n");
+  else printf("nok (7)\n");
+  exibirLog(f);
+  if(reduzirPrioridade(f, 0, 0)) printf("ok\n");
+  else printf("nok (15)\n");
+  exibirLog(f);
 
   float prioridade;
-if(consultarPrioridade(f, 2, &prioridade)) printf("ok %f\n", prioridade);
+if(consultarPrioridade(f, 0, &prioridade)) printf("ok %f\n", prioridade);
   else printf("nok (1)\n");
 
     int tam;
