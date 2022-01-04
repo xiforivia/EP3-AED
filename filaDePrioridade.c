@@ -80,6 +80,7 @@ void maxHeapfy(PFILA f, int i)
 
   }
 }
+
 void maxHeapfyInverso(PFILA f, int i)
 {
   int e = 2*i + 1;
@@ -171,7 +172,21 @@ bool reduzirPrioridade(PFILA f, int id, float novaPrioridade){
 PONT removerElemento(PFILA f){
   PONT res = NULL;
   
-  /* COMPLETAR */
+  if(f->elementosNoHeap <= 0)
+    return res;
+
+  res = f->heap[0];
+
+  f->referencias[res->id] = NULL;
+
+  int ultimo = f->elementosNoHeap-1;
+
+  f->heap[0] = f->heap[ultimo];
+
+  if(f->elementosNoHeap > 1)
+    maxHeapfyInverso(f, 0);
+
+  f->elementosNoHeap--;
   
   return res;
 }
@@ -186,40 +201,4 @@ bool consultarPrioridade(PFILA f, int id, float* resposta){
 
   res = true;
   return res;
-}
-int main()
-{
-  PFILA f = criarFila();
-  exibirLog(f);
-
-  if(inserirElemento(f, 1, 1)) printf("ok\n");
-  else printf("nok (1)\n");
-  exibirLog(f);
-
-  if(inserirElemento(f, 2, 2)) printf("ok\n");
-  else printf("nok (1)\n");
-  exibirLog(f);
-  if(inserirElemento(f, 4, 3)) printf("ok\n");
-  else printf("nok (2)\n");
-  exibirLog(f);
-  if(inserirElemento(f, 3, 5)) printf("ok\n");
-  else printf("nok (2)\n");
-  exibirLog(f);
-  if(inserirElemento(f, 0, 1)) printf("ok\n");
-  else printf("nok (2)\n");
-  exibirLog(f);
-  if(aumentarPrioridade(f, 0, 15)) printf("ok\n");
-  else printf("nok (7)\n");
-  exibirLog(f);
-  if(reduzirPrioridade(f, 0, 0)) printf("ok\n");
-  else printf("nok (15)\n");
-  exibirLog(f);
-
-  float prioridade;
-if(consultarPrioridade(f, 0, &prioridade)) printf("ok %f\n", prioridade);
-  else printf("nok (1)\n");
-
-    int tam;
-  tam = tamanho(f);
-  printf("%d\n", tam);
 }
