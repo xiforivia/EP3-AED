@@ -182,6 +182,7 @@ PONT removerElemento(PFILA f){
   int ultimo = f->elementosNoHeap-1;
 
   f->heap[0] = f->heap[ultimo];
+  f->heap[0]->posicao = 0; 
 
   if(f->elementosNoHeap > 1)
     maxHeapfyInverso(f, 0);
